@@ -6,7 +6,7 @@ u16 printf_count = 65534, printf_count_temp = 0;	//串口打印时间间隔
 u8 USART1_RX_DATA[4];		//存储USART1接收到的数据
 
 u32 count_flag;					//Debug
-u8 u1_action_mode = 0;			//串口1动作指令变量
+u8 u1_action_mode = 0x25;			//串口1动作指令变量
 
 int	main()
 {
@@ -16,7 +16,7 @@ int	main()
 	uart_init(115200);					//USART1初始化
 	uart2_init(115200);					//USART2初始化
 	TIM1_Init(150, 7199);      	//TIM1 15ms 中断	149, 7199
-	TIM3_PWM_Init(1800, 800);    //舵机PWM初始化   199,7199  9999, 143	1799, 800
+	TIM3_PWM_Init(1800, 799);   //舵机PWM初始化   199,7199  9999, 143	1799, 800
 	Set_PWM(0, 0);
 	printf("u1初始化完成\n");
 
@@ -41,6 +41,7 @@ int	main()
 			case 0x5: Mode_Init(); Action_Mode=11; break;		//发挥部分1
 			case 0x6: Mode_Init(); Action_Mode=12; break;		//发挥部分2
 			case 0x7: Mode_Init(); Action_Mode=13; break;		//发挥部分3
+			case 0x20: Mode_Init();	Action_Mode=20; break;	//发挥部分2设置目标点
 			case 0x21: Mode_Init(); Action_Mode=21; break;	//去点1
 			case 0x22: Mode_Init(); Action_Mode=22; break;	//去点2
 			case 0x23: Mode_Init(); Action_Mode=23; break;	//去点3

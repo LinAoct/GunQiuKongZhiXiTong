@@ -5,7 +5,7 @@
 //float x_speed_Kp = 0.0, x_speed_Ki = 0.0, x_speed_Kd = 0.0;					//PIDÏà¹Ø²ÎÊı
 //float y_speed_Kp = 0.0, y_speed_Ki = 0.0, y_speed_Kd = 0.0;		//PIDÏà¹Ø²ÎÊı	
 
-float x_side_Kp = 20.0, x_side_Ki = 0.1, x_side_Kd = 120.0;				//XÖáÎ»ÖÃ»· PID²ÎÊı
+float x_side_Kp = 20.0, x_side_Ki = 0.1, x_side_Kd = 145.0;				//XÖáÎ»ÖÃ»· PID²ÎÊı
 float y_side_Kp = 20.0, y_side_Ki = 0.1, y_side_Kd = 150.0;				//YÖáÎ»ÖÃ»· PID²ÎÊı
 
 float x_speed_Kp = -10.0, x_speed_Ki = 0.0, x_speed_Kd = 50.0;			//XÖáËÙ¶È»· PID²ÎÊı
@@ -21,7 +21,7 @@ float y_speed_Kp = -8.0, y_speed_Ki = 0.0, y_speed_Kd = 55.0;	//YÖáËÙ¶È»· PID²ÎÊ
 int PID_Side_X(float current_side)
 {
 	float Differential, Bias;		//¶¨Òå²î·Ö±äÁ¿ºÍÆ«²î±äÁ¿
-	static float Last_Bias, Integration, Balance_Integration, Flag_Target;  //ÉÏÒ»´ÎµÄÆ«²îÖµ
+	static float Last_Bias, Integration, Balance_Integration;  //ÉÏÒ»´ÎµÄÆ«²îÖµ
 
 	Bias = current_side - target_point_X;  	//¼ÆËãµ±Ç°Æ«²îÖµ 
 	Differential = Bias - Last_Bias;  			//¼ÆËãÆ«²îµÄ±ä»¯ÂÊ	 
@@ -47,7 +47,7 @@ int PID_Side_X(float current_side)
 int PID_Side_Y(float current_side)
 {  
 	float Differential, Bias;		//¶¨Òå²î·Ö±äÁ¿ºÍÆ«²î±äÁ¿
-	static float Last_Bias,Integration,Balance_Integration,Flag_Target;  //ÉÏÒ»´ÎµÄÆ«²îÖµ
+	static float Last_Bias, Integration, Balance_Integration;  //ÉÏÒ»´ÎµÄÆ«²îÖµ
 
 	Bias = current_side - target_point_Y;		//¼ÆËãµ±Ç°Æ«²îÖµ  
 	Differential = Bias - Last_Bias;  			//¼ÆËãÆ«²îµÄ±ä»¯ÂÊ	 

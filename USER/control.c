@@ -2,15 +2,17 @@
 
 //数字点位置坐标
 u8 Point[10][2]={{0,0},{40,35},{115,35},{190,35},
-												{35,110},{117,110},{190,110},
-												{45,186},{120,185},{193,185}};
+												{45,110},{117,110},{190,110},
+												{45,185},{120,185},{193,185}};
 //画圆坐标
 u8 Squre_Point[9][2]={{0,0},{120,50},{150,80},{180,110},
 														{150,140},{120,170},{90,140},
 														{60,110},{90,80}};
 
-u8 max_target_PID = 70;			//舵机最大CCR变化值  50
-u8 speed_max = 25;					//速度环最大速度限制 30
+u8 Mode_Plus_2_Target_Side[4];	//存储发挥部分2的目标数字
+
+u8 max_target_PID = 60;					//舵机最大CCR变化值  50
+u8 speed_max = 25;							//速度环最大速度限制 30
 
 u8 Position_X, Position_Y;
 
@@ -27,9 +29,11 @@ u8 USART2_RX_DATA[2];	//位置信息接收变量
 u8 Action_Mode;				//动作变量
 												
 void TIM1_UP_IRQHandler(void)
-{    
+{
+	static u8 last_action_mode;		//保存上次一次动作变量
 	if (TIM_GetITStatus(TIM1, TIM_IT_Update) != RESET)	//检查TIM1是否发生中断
 	{
+		if(Action_Mode != last_action_mode)	Mode_Init();
 		switch(Action_Mode)
 		{
 			case 100:	Mode_Stop(); break; 

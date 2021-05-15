@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+    <link rel="shortcut icon" href="./img/favicon.ico" type="image/x-icon"/>
+    <title>滚球控制系统Web控制终端</title>
+    <script src="https://cdn.bootcss.com/jquery/3.4.0/jquery.min.js"></script>
+    <script src="./js/paho-mqtt.js" type="text/javascript"> </script>
+    <script src="./js/commonhelp.js" type="text/javascript"> </script>
+    <script src="./js/joystick.js" type="text/javascript"> </script>
+    <script src="./js/mqtthelp.js" type="text/javascript"> </script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js" type="text/javascript"> </script> -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js" type="text/javascript"></script> -->
+    <link rel="stylesheet" href="./css/style.css"/>
+</head>
+
+<body>
+    <form action="#">
+        <div>
+            <div class="div_label">
+                <!-- <div class="mqtt-state-container" title="红色代表断线，点击重连">
+                    <label>MQTT连接状态</label>
+                    <div class="mqtt-state" id="mqtt-state" onclick="connectManual()" ></div>
+                </div> -->
+                <label ID="label_textbox">在此输入命令:</label>
+                <input class="textbox_command" id="command" value="FF FE 00" />
+            </div>
+            <div class="div_tip">
+                <input type="checkbox" class="checkbox-silde" id="checkbox-hex" checked="true" /><label for="checkbox-hex"><span>HEX</span></label>
+                <div class="mqtt-state-container" title="红色代表断线，点击重连"  onclick="connectManual()">
+                    <label id="mqtt-state-label">MQTT未连接</label>
+                    <div class="mqtt-state" id="mqtt-state"></div>
+                </div>
+                <!-- <label ID="label_tip" Font-Size="Smaller" >注意不要输入中文</label> -->
+            </div>
+            <div class="div_button" >
+                <button class="btn-green" type="button" onclick="sendCommand()">发送命令</button>
+            </div>
+            <br/>
+
+            <div class="function-container">
+                <div id="num-btn-container">
+                    <ul>
+                        <li><input type="button" onclick="sendFunctionValue(1)" value="基础任务1" /></li>
+                        <li><input type="button" onclick="sendFunctionValue(2)" value="基础任务2" /></li>
+                        <li><input type="button" onclick="sendFunctionValue(3)" value="基础任务3" /></li>
+                        <li><input type="button" onclick="sendFunctionValue(4)" value="基础任务4" /></li>
+                        <li><input type="button" onclick="sendFunctionValue(5)" value="发挥部分1" /></li>
+                        <li><input type="button" onclick="sendFunctionValue(7)" value="发挥部分3" /></li>
+                        <li><input type="button" onclick="" value="发挥2设置" /></li>
+                        <li><input type="button" onclick="sendFunctionValue(6)" value="发挥部分2" /></li>
+                        <!-- <li><input type="button" onclick="" value="" /></li> -->
+                    </ul>
+                    <ul>
+                        <li><input type="button" onclick="sendFunctionValue(21)" value="⊙1" /></li>
+                        <li><input type="button" onclick="sendFunctionValue(22)" value="⊙2" /></li>
+                        <li><input type="button" onclick="sendFunctionValue(23)" value="⊙3" /></li>
+                        <li><input type="button" onclick="sendFunctionValue(24)" value="⊙4" /></li>
+                        <li><input type="button" onclick="sendFunctionValue(25)" value="⊙5" /></li>
+                        <li><input type="button" onclick="sendFunctionValue(26)" value="⊙6" /></li>
+                        <li><input type="button" onclick="sendFunctionValue(27)" value="⊙7" /></li>
+                        <li><input type="button" onclick="sendFunctionValue(28)" value="⊙8" /></li>
+                        <li><input type="button" onclick="sendFunctionValue(29)" value="⊙9" /></li>
+                    </ul>
+                    <input type="button" class="btn-stop" onclick="sendFunctionValue(0)" value="停止" />
+                </div>
+                <div class="joystick-container">
+                    <canvas id="canvas" width="300" height="300" style="border: 1px solid #888"></canvas>
+                    <sapn id="xvalue"></sapn>
+                    <img id='smallcircuit' src="img/joystick1.png" style="display: none">
+                    <img id='numpoint' src="img/point.png" style="display: none">
+                </div>
+
+                <!-- <div class="joystick-container">
+                    <canvas id="canvas" width="300" height="300" style="border: 1px solid #888"></canvas>
+                    <sapn id="xvalue"></sapn>
+                    <img id='smallcircuit' src="img/joystick1.png" style="display: none">
+                    <img id='bigcircuit' src="img/joystick2.png" style="display: none">
+                </div> -->
+            </div>
+        </div>
+    </form>
+</body>
+
+</html>

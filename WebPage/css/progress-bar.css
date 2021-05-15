@@ -1,0 +1,27 @@
+﻿.div_bar_bottom {
+    width:500px;
+    height:30px;
+    margin:100px auto;
+    background-image: linear-gradient(to left, #fff1eb 0%, #ace0f9 100%);
+    border-radius:10px;
+    border:0px solid;
+    text-align:right;
+    font-size:60px;
+    font-family: 可可童话体;
+}
+
+.div_bar_top {
+    width:500px;
+    height:30px;
+    border-radius:10px;
+    //background:repeating-linear-gradient(45deg,#d1d8e0 0px,#d1d8e0 15px,#778ca3 15px,#778ca3 30px);
+    background:repeating-linear-gradient(45deg,#f8a5c2 0px,#f8a5c2 15px,#f7d794 15px,#f7d794 30px);
+    background-size:42px auto;
+    animation:bar-flow 1s linear 0s infinite normal both;
+}
+
+@keyframes bar-flow {
+    from {background-position:0px 0px}
+    to {background-position:42px 0px}
+}
+

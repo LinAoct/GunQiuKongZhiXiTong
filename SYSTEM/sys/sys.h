@@ -82,5 +82,6 @@ extern u8 target_point_X, target_point_Y;
 extern u8 IS_USART1_RX_Success;
 extern u8 Action_Mode;
 extern u8 speed_max;
+extern u8 Mode_Plus_2_Target_Side[4];	//存储发挥部分2的目标数字
 
 #endif
