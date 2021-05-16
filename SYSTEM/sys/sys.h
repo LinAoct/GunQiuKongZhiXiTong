@@ -10,6 +10,7 @@
 #include "key.h"
 #include "usart.h"
 #include "usart2.h"
+#include "usart3.h"
 #include "timer.h"
 #include "timer2.h"
 #include "servo.h"
@@ -76,11 +77,20 @@ void MSR_MSP(u32 addr);	//设置堆栈地址
 
 
 extern u8 IS_USART1_RX_HEAD;		//标志是否接收到数据头
+extern u8 IS_USART1_RX_Success;	//标志USART1是否接收完成
 extern u8 USART1_RX_DATA[4];		//USART1接收到的数据缓存
-extern u8 USART1_RX_BUF[4];		//存储USART1接收到的数据
-extern u8 target_point_X, target_point_Y;
-extern u8 IS_USART1_RX_Success;
+extern u8 USART1_RX_BUF[4];			//存储USART1接收到的数据
+extern u8 U1_Mode;							//USART1接收模式变量
+
+extern u8 IS_USART3_RX_HEAD;		//标志是否接收到数据头
+extern u8 IS_USART3_RX_Success;	//标志USART3是否接收完成
+extern u8 USART3_RX_DATA[4];		//USART3接收到的数据缓存
+extern u8 USART3_RX_BUF[4];			//存储USART3接收到的数据
+extern u8 U3_Mode;							//USART3接收模式变量
+
 extern u8 Action_Mode;
+extern u8 target_point_X, target_point_Y;
+extern u8 target_point_X_temp, target_point_Y_temp;
 extern u8 speed_max;
 extern u8 Mode_Plus_2_Target_Side[4];	//存储发挥部分2的目标数字
 

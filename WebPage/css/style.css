@@ -20,6 +20,7 @@ html, body {
     /* width: 230px; */
     position: absolute;
     right: 8px;
+    cursor: pointer;
 }
 
 .mqtt-state{
@@ -28,7 +29,7 @@ html, body {
     border-radius: 20px;
     display: inline-block;
     background-color: #FC8472;
-    cursor: pointer;
+    margin: -4px auto;
 }
 
 .div_label{
@@ -71,8 +72,8 @@ html, body {
 }
 
 .div_button {
-    margin-top:10px;
-    text-align:center;
+    margin-top: 8px;
+    text-align: center;
     position: relative;
 }
 
@@ -94,6 +95,7 @@ html, body {
     display: inline-block;
     outline: none;
     -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
     user-select: none;
     background-color: #89d8d3;
     background-image: linear-gradient(315deg, #89d8d3 0%, #03c8a8 74%);
@@ -208,21 +210,12 @@ input[type="checkbox"] + label {
 }
 
 
-
-
-
-
-
-
-
-
-
-
 .function-container{
     position: relative;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
+    margin-bottom: 20px;
 }
 
 #num-btn-container {

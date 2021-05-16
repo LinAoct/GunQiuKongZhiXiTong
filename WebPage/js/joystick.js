@@ -13,6 +13,7 @@ $(function () {
     let BIG_CIRCUIT_R = 100;//大圆半径
     let output = {}; //摇杆输出值， -1000~1000 -1000~1000 这样好统一！！！
 
+    var x,y;
     var send_spacing_count = 0;
 
     var bytedata = new ArrayBuffer(5);
@@ -61,58 +62,65 @@ $(function () {
         ctx.drawImage(img1, 135, 225, 30, 30);
         ctx.drawImage(img1, 225, 225, 30, 30);
 
-        if(posx>Canvas_Width)
-            posx = Canvas_Width;
-        if(posy>Canvas_Height)
-            posy = Canvas_Height;
         //根据鼠标位置平移
         //let pos = getXY(posx - POS_X - BIG_CIRCUIT_R, posy - POS_Y - BIG_CIRCUIT_R);  //这里去掉偏移值
         //console.log(pos);
-        $('#xvalue').text(posx+","+posy);
 
         //console.log(output);
         //ctx.translate(pos.x + POS_X + BIG_CIRCUIT_R - SAMLL_CIRCUIT_R, pos.y + POS_Y + BIG_CIRCUIT_R - SAMLL_CIRCUIT_R);
         //画上球
         ctx.drawImage(img_point, posx-SAMLL_CIRCUIT_R, posy-SAMLL_CIRCUIT_R, SAMLL_CIRCUIT_R * 2, SAMLL_CIRCUIT_R * 2);
+        
+        $('#xvalue').text(parseInt(posx/Canvas_Width*240)+","+parseInt(posy/Canvas_Height*240));
         //还原状态
         ctx.restore();
     }
 
-    function dragstart_event(e) {
-        mousedown = true;
-        joystickdraw(e.offsetX, e.offsetY)
-    }
-
-    function dragging_event(e) {
-        if (mousedown) {
-            var x = parseInt(e.offsetX);
-            var y = parseInt(e.offsetY);
-            if(x<0)
-                x=-x;
-            if(y<0)
-                y=-y;        
-            joystickdraw(x, y)
-            if(send_spacing_count>=10) {
-                send_spacing_count=0;
-                sendPointValue(x, y);
-            }
-        }
-        send_spacing_count+=1;
-    }
-
-    function dragstop_event() {
-        mousedown = false;
-        //init();
-    }
-
-    mycanvas.addEventListener('touchstart', function (e) {
-        mousedown = true;
-        var x = parseInt(e.changedTouches[0].clientX - mycanvas.offsetLeft);
-        var y = parseInt(e.changedTouches[0].clientY - mycanvas.offsetParent.offsetTop);
+    //XY值修正
+    function xyValueLimit() {
         if(x<0)
             x=-x;
         if(y<0)
             y=-y;
+        if(x>Canvas_Width)
+            x = Canvas_Width;
+        if(y>Canvas_Height)
+            y = Canvas_Height;
+    }
+
+    function dragstart_event(e) {
+        mousedown = true;
+        x = e.offsetX;
+        y = e.offsetY;
+        xyValueLimit();
+        joystickdraw(x, y);
+        sendPointValue(x, y);
+    }
+
+    function dragging_event(e) {
+        if (mousedown) {
+            x = e.offsetX;
+            y = e.offsetY;
+            xyValueLimit();
+            if(send_spacing_count>=10) {
+                send_spacing_count=0;
+                sendPointValue(x, y);
+            }
+            joystickdraw(x, y)
+            send_spacing_count+=1;
+        }
+    }
+
+    function dragstop_event() {
+        mousedown = false;
+    }
+
+    mycanvas.addEventListener('touchstart', function (e) {
+        mousedown = true;
+        console.log("touchstart");
+        x = parseInt(e.changedTouches[0].clientX - mycanvas.offsetLeft);
+        y = parseInt(e.changedTouches[0].clientY - mycanvas.offsetParent.offsetTop);
+        xyValueLimit();
         sendPointValue(x, y);
         joystickdraw(x, y);
     }, false)
@@ -120,12 +128,20 @@ $(function () {
     mycanvas.addEventListener('touchmove', function (e) {
         if (mousedown) {
             e.preventDefault();
-            var x = parseInt(e.changedTouches[0].clientX - mycanvas.offsetLeft);
-            var y = parseInt(e.changedTouches[0].clientY - mycanvas.offsetParent.offsetTop);
-            if(x<0)
-                x=-x;
-            if(y<0)
-                y=-y;
+            console.log("touchmove");
+            if(e.changedTouches[0].clientX<mycanvas.offsetLeft)
+                x=0;
+            else if(e.changedTouches[0].clientX>mycanvas.offsetLeft+Canvas_Width)
+                x=Canvas_Width;
+            else x = parseInt(e.changedTouches[0].clientX - mycanvas.offsetLeft);
+
+            if(e.changedTouches[0].clientY<mycanvas.offsetParent.offsetTop)
+                y=0;
+            else if(e.changedTouches[0].clientY>mycanvas.offsetParent.offsetTop+Canvas_Height)
+                y=Canvas_Height;
+            else y = parseInt(e.changedTouches[0].clientY - mycanvas.offsetParent.offsetTop);
+
+            xyValueLimit();
             if(send_spacing_count>=10) {
                 send_spacing_count=0;
                 sendPointValue(x, y);
@@ -137,12 +153,11 @@ $(function () {
 
     mycanvas.addEventListener('touchend', function (e) {
         mousedown = false;
-        //init();
     }, false)
 
     function sendPointValue(x, y) {
-        bytedata[3] = parseInt(x / Canvas_Width * 240);
-        bytedata[4] = parseInt(y / Canvas_Height * 240);
+        bytedata[3] = parseInt(x/Canvas_Width*240);
+        bytedata[4] = parseInt(y/Canvas_Height*240);
         mqttSendBytes(bytedata);
     }
 

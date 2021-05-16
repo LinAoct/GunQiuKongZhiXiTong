@@ -14,6 +14,7 @@ void Mode_Plus_2(void);
 void Mode_Plus_3(void);
 void Mode_Go_Num(u8 num);
 void Mode_Go_1_To_9(void);
+void Mode_Go_Target_Point(u8 x, u8 y);
 void Mode_Draw_Square(void);
 void PID_Limit(int *x_pid, int *y_pid);
 void Mode_Init(void);

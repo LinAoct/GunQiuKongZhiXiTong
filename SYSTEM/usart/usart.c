@@ -61,9 +61,9 @@ u8 USART_RX_BUF[USART_REC_LEN];     //接收缓冲,最大USART_REC_LEN个字节.
 u16 USART_RX_STA=0;       //接收状态标记	  
  
 u8 IS_USART1_RX_HEAD;		//标志是否接收到数据头
+u8 IS_USART1_RX_Success=0;
 u8 USART1_RX_BUF[4];		//USART1接收缓冲
-u8 IS_USART1_RX_Success = 0;
-
+u8 U1_Mode;
 
 void uart_init(u32 bound){
   //GPIO端口设置
@@ -108,7 +108,7 @@ void uart_init(u32 bound){
 
 void USART1_IRQHandler(void)                	//串口1中断服务程序
 {
-	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)  //接收中断(接收到的数据必须是0x0d 0x0a结尾)
+	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)  //接收中断
 	{	  
 		u8 current_data;
 		static u8 data_index, last_data, last_last_data;
@@ -121,12 +121,22 @@ void USART1_IRQHandler(void)                	//串口1中断服务程序
 		}
 		if(IS_USART1_RX_HEAD == 1)	//已经获取到数据头 0xff 0xfe
 		{	
-			USART1_RX_BUF[data_index] = current_data;
-			data_index++;															//数据位索引加一
-			if(data_index == 1) IS_USART1_RX_HEAD=0, IS_USART1_RX_Success=1;	//接收到4字节数据  已经接收完毕，准备重新接收
+			if(current_data == 0xfd && U1_Mode == 0)
+				U1_Mode=1;
+			else if(U1_Mode == 1)
+			{
+				USART1_RX_BUF[data_index] = current_data;
+				data_index++;															//数据位索引加一
+				if(data_index == 2) IS_USART1_RX_HEAD=0, IS_USART1_RX_Success=1;	//接收到2字节数据 准备重新接收
+			}
+			else
+			{
+				USART1_RX_BUF[data_index] = current_data;
+				data_index++;															//数据位索引加一
+				if(data_index == 1) IS_USART1_RX_HEAD=0, IS_USART1_RX_Success=1;	//接收到1字节数据 准备重新接收
+			}
 		}
 		last_last_data = last_data;		//保存前一次接收到的位
 		last_data = current_data;			//保存本次接收到的位
 	}
-
 } 

@@ -4,14 +4,20 @@
 //#if EN_USART3_RX   //如果使能了接收
 //串口3中断服务程序
 //注意,读取USARTx->SR能避免莫名其妙的错误   	
-u8 USART3_RX_BUF[USART3_REC_LEN];     //接收缓冲,最大USART3_REC_LEN个字节.
+//u8 USART3_RX_BUF[USART3_REC_LEN];     //接收缓冲,最大USART3_REC_LEN个字节.
 u8 USART3_TX_BUF[100]; 			//发送缓冲,最大USART3_MAX_SEND_LEN字节
 //接收状态
 //bit15，	接收完成标志
 //bit14，	接收到0x0d
 //bit13~0，	接收到的有效字节数目
 u16 USART3_RX_STA=0;       //接收状态标记	  
-  
+
+u8 IS_USART3_RX_HEAD;		//标志是否接收到数据头
+u8 IS_USART3_RX_Success=0;
+u8 USART3_RX_BUF[4];		//USART3接收缓冲
+u8 U3_Mode;
+ 
+ 
 void uart3_init(u32 bound)
 {
   //GPIO端口设置
@@ -48,9 +54,9 @@ void uart3_init(u32 bound)
 	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;	//无硬件数据流控制
 	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;									//收发模式
 
-  USART_Init(USART3, &USART_InitStructure); 			//初始化串口2
+  USART_Init(USART3, &USART_InitStructure); 			//初始化串口3
   USART_ITConfig(USART3, USART_IT_RXNE, ENABLE);	//开启串口接受中断
-  USART_Cmd(USART3, ENABLE);                    	//使能串口2
+  USART_Cmd(USART3, ENABLE);                    	//使能串口3
 }
 
 
@@ -63,30 +69,68 @@ void uart3_init(u32 bound)
 */
 void USART3_IRQHandler(void)
 {
-	u8 Res;
-	if(USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)  //接收中断(接收到的数据必须是0x0d 0x0a结尾)
-	{
-		Res =USART_ReceiveData(USART3);		//读取接收到的数据
-		
-		if((USART3_RX_STA&0x8000)==0)			//接收未完成
-		{
-			if(USART3_RX_STA&0x4000)				//接收到了0x0d
+	if(USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)  //接收中断
+	{	  
+		u8 current_data;
+		static u8 data_index, last_data, last_last_data;
+		current_data = USART3 -> DR;
+		//printf("u3中断[%d]",current_data);
+		if(IS_USART3_RX_HEAD == 0)	//未获取到数据头 0xff 0xfe
+		{	
+			if(last_data==0xfe && last_last_data==0xff) 
+				IS_USART3_RX_HEAD=1, data_index=0;
+		}
+		if(IS_USART3_RX_HEAD == 1)	//已经获取到数据头 0xff 0xfe
+		{	
+			if(current_data == 0xfd && U3_Mode == 0)
+				U3_Mode=1;
+			else if(U3_Mode == 1)
 			{
-				if(Res!=0x0a)USART3_RX_STA=0;	//接收错误,重新开始
-				else USART3_RX_STA|=0x8000;		//接收完成了 
+				USART3_RX_BUF[data_index] = current_data;
+				data_index++;															//数据位索引加一
+				if(data_index == 2) IS_USART3_RX_HEAD=0, IS_USART3_RX_Success=1;	//接收到2字节数据 准备重新接收
 			}
-			else //还没收到0x0D
-			{	
-				if(Res==0x0d)USART3_RX_STA|=0x4000;
-				else
-				{
-					USART_RX_BUF[USART3_RX_STA&0X3FFF]=Res ;						//按位与 与前14位得到有效字节长度
-					USART3_RX_STA++;
-					if(USART3_RX_STA>(USART_REC_LEN-1))USART3_RX_STA=0;	//接收数据错误,重新开始接收	  
-				}		 
+			else
+			{
+				USART3_RX_BUF[data_index] = current_data;
+				data_index++;															//数据位索引加一
+				if(data_index == 1) IS_USART3_RX_HEAD=0, IS_USART3_RX_Success=1;	//接收到1字节数据 准备重新接收
 			}
-		}   		 
-	} 
+		}
+		last_last_data = last_data;		//保存前一次接收到的位
+		last_data = current_data;			//保存本次接收到的位
+	}
+	
+	
+	
+	
+	
+	
+	
+//	u8 Res;
+//	if(USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)  //接收中断(接收到的数据必须是0x0d 0x0a结尾)
+//	{
+//		Res =USART_ReceiveData(USART3);		//读取接收到的数据
+//		
+//		if((USART3_RX_STA&0x8000)==0)			//接收未完成
+//		{
+//			if(USART3_RX_STA&0x4000)				//接收到了0x0d
+//			{
+//				if(Res!=0x0a)USART3_RX_STA=0;	//接收错误,重新开始
+//				else USART3_RX_STA|=0x8000;		//接收完成了 
+//			}
+//			else //还没收到0x0D
+//			{	
+//				if(Res==0x0d)USART3_RX_STA|=0x4000;
+//				else
+//				{
+//					USART_RX_BUF[USART3_RX_STA&0X3FFF]=Res ;						//按位与 与前14位得到有效字节长度
+//					USART3_RX_STA++;
+//					if(USART3_RX_STA>(USART_REC_LEN-1))USART3_RX_STA=0;	//接收数据错误,重新开始接收	  
+//				}		 
+//			}
+//		}   		 
+//	} 
 }
 
 

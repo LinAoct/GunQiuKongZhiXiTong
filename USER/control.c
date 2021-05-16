@@ -16,10 +16,11 @@ u8 speed_max = 25;							//速度环最大速度限制 30
 
 u8 Position_X, Position_Y;
 
-int Last_X_target_PID, Last_Y_target_PID;		//上次位置 PID 输出值变量
-int X_target_PID, Y_target_PID;							//当前 PID 输出值变量
+int Last_X_target_PID, Last_Y_target_PID;			//上次位置 PID 输出值变量
+int X_target_PID, Y_target_PID;								//当前 PID 输出值变量
 
-u8 target_point_X, target_point_Y;					//小球坐标目标值
+u8 target_point_X, target_point_Y;						//小球坐标目标值
+u8 target_point_X_temp, target_point_Y_temp;	//小球目标值缓存
 
 int square_r = 50, square_current_x, square_current_y;
 														
@@ -53,6 +54,7 @@ void TIM1_UP_IRQHandler(void)
 			case 27: Mode_Go_Num(7); break;
 			case 28: Mode_Go_Num(8); break;
 			case 29: Mode_Go_Num(9); break;
+			case 30: Mode_Go_Target_Point(target_point_X_temp, target_point_Y_temp); break;
 			default: break;
 		}
 		TIM_ClearITPendingBit(TIM1, TIM_IT_Update);			//清除TIM1的中断待处理位
@@ -223,6 +225,35 @@ void Mode_Go_1_To_9(void)
 		Set_PWM(X_target_PID, Y_target_PID);			//舵机输出
 	}
 	//printf("坐标:%d, %d\t PID:%d, %d\t count:%d\n", Position_X, Position_Y, X_target_PID, Y_target_PID, count);
+}
+
+/*
+*===================================================================
+*		说明：去目标点
+*		参数：x	<u8>	目标点x
+					y	<u8>	目标点y
+*		返回：无
+*===================================================================
+*/
+void Mode_Go_Target_Point(u8 x, u8 y)
+{
+	target_point_X = x;
+	target_point_Y = y;
+
+	if(IS_USART2_RX_HEAD == 0) memcpy(USART2_RX_DATA, USART2_RX_BUF, 2*sizeof(u8));	//判断当前是否正在接收数据
+	Position_X = USART2_RX_DATA[0];
+	Position_Y = USART2_RX_DATA[1];
+
+	if(Position_Y!=253||Position_X!=253)			//检测到小球
+	{
+		X_target_PID = PID_Side_X(Position_X);
+		Y_target_PID = PID_Side_Y(Position_Y);
+
+		X_target_PID -= PID_Speed_X(Position_X);
+		Y_target_PID -= PID_Speed_Y(Position_Y);
+		PID_Limit(&X_target_PID, &Y_target_PID);	//输出量限幅 防止卡死
+		Set_PWM(X_target_PID, Y_target_PID);			//舵机输出
+	}
 }
 
 /*

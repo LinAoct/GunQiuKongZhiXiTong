@@ -433,6 +433,11 @@
               <FileType>5</FileType>
               <FilePath>..\SYSTEM\sys\sys.h</FilePath>
             </File>
+            <File>
+              <FileName>usart3.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\SYSTEM\usart3\usart3.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
