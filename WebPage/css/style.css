@@ -228,6 +228,7 @@ input[type="checkbox"] + label {
     justify-content: center;
     background-color: rgba(69,170,242, 0.3);
     border-radius: 20px;
+    margin-bottom: 20px;
 }
 
 #num-btn-container ul {
@@ -272,6 +273,7 @@ input[type="checkbox"] + label {
     background-color: #fad0c4;
     width: 300px;
     height: 300px;
+    margin-bottom: 20px;
 }
 
 /*********************************标题栏开始************************************/

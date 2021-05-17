@@ -34,7 +34,7 @@ void TIM1_UP_IRQHandler(void)
 	static u8 last_action_mode;		//保存上次一次动作变量
 	if (TIM_GetITStatus(TIM1, TIM_IT_Update) != RESET)	//检查TIM1是否发生中断
 	{
-		if(Action_Mode != last_action_mode)	Mode_Init();
+		//if(Action_Mode != last_action_mode)	Mode_Init();
 		switch(Action_Mode)
 		{
 			case 100:	Mode_Stop(); break; 
@@ -97,6 +97,7 @@ void Mode_Base_1(void)
 */
 void Mode_Base_2(void)
 {
+	printf("%d, %d", count, step);
 	if(step == 0) count = 101, step++;
 	if(step == 1 && count>0) Mode_Go_Num(1), count--;	//延时 1500ms
 	if(step == 1 && count==0) Mode_Go_Num(5);

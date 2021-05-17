@@ -69,6 +69,6 @@ void SERVO_Test(void)
 
 void Set_PWM(int pwm_x, int pwm_y)
 {
-	TIM3->CCR1 = 130 + pwm_x;
-	TIM3->CCR2 = 150 + pwm_y;
+	TIM3->CCR1 = 135 + pwm_x;
+	TIM3->CCR2 = 152 + pwm_y;
 }
